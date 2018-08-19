@@ -147,14 +147,14 @@ The last image might be difficult to classify because the sign is very light.
 
 Here are the results of the prediction:
 
-|| Image									| Prediction							| 
-||:-------------------------------------:|:-------------------------------------:| 
-|![alt text][image3]| Double curve							| Double curve   						| 
-|![alt text][image4]| Road work								| Road work 							|
-|![alt text][image5]| 70 km/h								| 70 km/h								|
-|![alt text][image6]| Right-of-way at the next intersection	| Right-of-way at the next intersection	|
-|![alt text][image7]| Priority road							| Priority road							|
-|![alt text][image8]| Traffic signals						| Priority road							|
+| Image									| Prediction							| 
+|:-------------------------------------:|:-------------------------------------:| 
+| Double curve							| Double curve   						| 
+| Road work								| Road work 							|
+| 70 km/h								| 70 km/h								|
+| Right-of-way at the next intersection	| Right-of-way at the next intersection	|
+| Priority road							| Priority road							|
+| Traffic signals						| Priority road							|
 
 The model was able to correctly guess 5 of the 6 traffic signs, which gives an accuracy of 83%. This is far away as good as the accuracy of the test sets 94%. But the comparison is not fair because we need much more than 6 images to compare the different data sets.
 
