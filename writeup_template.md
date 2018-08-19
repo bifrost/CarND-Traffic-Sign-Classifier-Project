@@ -163,7 +163,7 @@ The model was able to correctly guess 5 of the 6 traffic signs, which gives an a
 
 The code for making predictions on my final model is located in the 56th cell of the Ipython notebook.
 
-For image 1, 3, 4 and 5 the model is very sure about the prediction (probability > 0.94). It was relatively sure that image 2 is Road work (probability of 0.68) meanwhile very uncertain about image 6 (probability of 0.36) that it also predicted wrong.
+For image 1, 3, 4 and 5 the model is very sure about the prediction (probability > 0.94). It was relatively sure that image 2 is Road work (probability of 0.68) meanwhile very uncertain about image 6 was a Priority road (probability of 0.36). The last prediction was also wrong.
 
 ![alt text][image3]
 
