@@ -20,8 +20,7 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./examples/histogram-class-count.png "Visualization"
-[image2a]: ./examples/sign-colors.png "Color"
-[image2b]: ./examples/sign-gray.png "Grayscaling"
+[image2]: ./examples/signs.png "Signs"
 [image3]: ./images/double_curve.jpeg "Traffic Sign 1"
 [image4]: ./images/road_work.jpeg "Traffic Sign 2"
 [image5]: ./images/70.jpeg "Traffic Sign 3"
@@ -67,9 +66,7 @@ As a first step, I decided to convert the images to grayscale because the struct
 
 Here is an example of a traffic sign image before and after grayscaling.
 
-![alt text][image2a]
-
-![alt text][image2b]
+![alt text][image2]
 
 I did not normalize the image before processing because I am using batch_normalization as first layer in the neural network.
 
