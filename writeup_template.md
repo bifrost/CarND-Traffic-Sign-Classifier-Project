@@ -70,7 +70,7 @@ Here is an example of a traffic sign image before and after grayscaling.
 
 ![alt text][image2]
 
-I did not normalize the image before processing because I am using batch_normalization as first layer in the neural network.
+As a kind of preprocessing I am also using batch_normalization as first layer in the neural network.
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
@@ -117,8 +117,7 @@ My final model consisted of the following layers:
 
 The Adam optimizer was used to train the model because it is fast, adaptive and often gives good results (that's my experience).
 The learning rate `0.0005` was selected because the default at `0.001` did not converge well and `0.0001` was too slow.
-I selected the batchsize `128` because it gave good results and can be executed in parallel on the GPU. 
-I stopped training around `80` epochs because the validation loss seems to reach its minimum. 
+I selected the batchsize `128` because it gave good results and can be executed in parallel on the GPU. A dropout rate on `0.5` did training loss and validation loss decreased proportional during training. I stopped training around `80` epochs because the validation loss seems to reach its minimum. 
 
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
@@ -139,6 +138,7 @@ Next step was to generalize the classifier to improve classification of the vali
 To regularize the net I did following: 
 * I added dropout after each Convolution layers and Dense layer
 * Before each dropout I also added batch normalization to speed up the learning process 
+
 Then I adjusting the learning rate, the dropout rate and monitored the validation loss until it reached its minimum.
 The minimum was reached around `80` epochs for a dropout rate on `0.5` and the validation accuracy was `0.97`.
 
