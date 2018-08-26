@@ -28,6 +28,7 @@ The goals / steps of this project are the following:
 [image7]: ./images/priority_road.jpeg "Traffic Sign 5"
 [image8]: ./images/Traffic_signals.png "Traffic Sign 6"
 [image9]: ./examples/featuremap.png "FeatureMaps"
+[image10]: ./examples/sign_with_labels.png "Signs with Labels"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -62,7 +63,8 @@ Here is an exploratory visualization of the data set. It is a bar chart showing 
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because the structure seems to be more important for the classification than the colors. I tried both RGB and HLS images as well as single channels but grayscale seems to work best. 
+As a first step, I decided to convert the images to grayscale because the structure seems to be more important for the classification than the colors. I tried both RGB and HLS images as well as single channels but grayscale seems to work best.
+Histogram Equalization was suggested in the review comment so I applied CLAHE second time. I also had to convert flot32 images to uint8 and scaled to the range [0, 255] because some images from the web have values in the range [0, 1].
 
 Here is an example of a traffic sign image before and after grayscaling.
 
@@ -113,20 +115,32 @@ My final model consisted of the following layers:
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-To train the model, I used the Adam optimizer with a `learning rate = 0.0005`, `EPOCHS = 80` and `BATCH_SIZE = 128`.
+The Adam optimizer was used to train the model because it is fast, adaptive and often gives good results (that's my experience).
+The learning rate `0.0005` was selected because the default at `0.001` did not converge well and `0.0001` was too slow.
+I selected the batchsize `128` because it gave good results and can be executed in parallel on the GPU. 
+I stopped training around `80` epochs because the validation loss seems to reach its minimum. 
 
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 My final model results were:
 * training set accuracy of 0.997
-* validation set accuracy of 0.969 
-* test set accuracy of 0.946
+* validation set accuracy of 0.970 
+* test set accuracy of 0.951
 
-An iterative approach was chosen:
-* First I tried to use Inception modules, but it seems to be overkill for the task and fast I reached a much better performance with a modified LeNet. I choosed LeNet because we have seen it worked well on small images.
-* The most important modification I did to LeNet was adding batch_normalization as first layer and dropout layers so I could increase the model size and parameters without overfitting.
-* The most important parameters I had to tune was the learning rate. I had to lower it a bit to increase accuracy on the training sets. The dropout rate was important to increase accuracy on the validation sets.
+I chose LeNet as inspiration because we have seen it worked well on small images.
+My first goal was to classify all training images correct, by doing that I know the CNN is powerful enough.
+I modified the net as following:
+* Batch normalization was added to normalize the input
+* I had to increase numbers of filters to 20 and 40 for the two Convolution layers 
+* and increase the Dense layers to 200 nodes
+
+Next step was to generalize the classifier to improve classification of the validation images. At that moment overfitting was a problem.
+To regularize the net I did following: 
+* I added dropout after each Convolution layers and Dense layer
+* Before each dropout I also added batch normalization to speed up the learning process 
+Then I adjusting the learning rate, the dropout rate and monitored the validation loss until it reached its minimum.
+The minimum was reached around `80` epochs for a dropout rate on `0.5` and the validation accuracy was `0.97`.
 
 
 ### Test a Model on New Images
@@ -151,10 +165,11 @@ Here are the results of the prediction:
 | 70 km/h								| 70 km/h								|
 | Right-of-way at the next intersection	| Right-of-way at the next intersection	|
 | Priority road							| Priority road							|
-| Traffic signals						| Priority road							|
+| Traffic signals						| Traffic signals						|
 
-The model was able to correctly guess 5 of the 6 traffic signs, which gives an accuracy of 83%. This is far away as good as the accuracy of the test sets 94%. But the comparison is not fair because we need much more than 6 images to compare the different data sets.
+After preprocessing of the images the model was able to classify traffic signs correct, which gives an accuracy of 100%. This is pretty good.
 
+![alt text][image10]
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
@@ -166,41 +181,41 @@ For image 1, 3, 4 and 5 the model is very sure about the prediction (probability
 
 | Probability			| Prediction							| 
 |:---------------------:|:-------------------------------------:| 
-| 94.78%				| Double curve   						| 
-| 2.08%					| Road narrows on the right 			|
-| 1.89%					| Road work								|
-| 0.45%					| Wild animals crossing					|
-| 0.24%					| Speed limit							|
+| 97.05%				| Double curve   						| 
+| 1.20%					| Bicycles crossing 					|
+| 0.43%					| Road narrows on the right				|
+| 0.40%					| Speed limit (30km/h)					|
+| 0.25%					| Right-of-way at the next intersection	|
 
 ![alt text][image4]
 
 | Probability			| Prediction							| 
 |:---------------------:|:-------------------------------------:| 
-| 68.27%				| Road work   							| 
-| 8.02%					| Road narrows on the right 			|
-| 6.76%					| Bicycles crossing						|
-| 4.01%					| Bumpy road							|
-| 3.77%					| Children crossing						|
+| 87.00%				| Road work   							| 
+| 9.55%					| Bicycles crossing 					|
+| 1.88%					| Children crossing						|
+| 0.69%					| Bumpy road							|
+| 0.25%					| Beware of ice/snow 					|
 
 ![alt text][image5]
 
 | Probability			| Prediction							| 
 |:---------------------:|:-------------------------------------:| 
-| 98.00%				| Speed limit (70km/h)					| 
-| 1.96%					| Speed limit (20km/h) 					|
-| 0.03%					| Speed limit (30km/h)					|
-| 0.01%					| Speed limit (60km/h)					|
-| 0.00%					| Keep left								|
+| 89.65%				| Speed limit (70km/h)					| 
+| 7.57%					| Speed limit (20km/h) 					|
+| 1.14%					| Speed limit (30km/h)					|
+| 0.77%					| Speed limit (80km/h)					|
+| 0.33%					| Speed limit (60km/h)					|
 
 ![alt text][image6]
 
 | Probability			| Prediction							| 
 |:---------------------:|:-------------------------------------:| 
-| 100.00%				| Right-of-way at the next intersection	| 
-| 0.00%					| Pedestrians 							|
-| 0.00%					| Beware of ice/snow					|
-| 0.00%					| General caution						|
-| 0.00%					| Children crossing						|
+| 96.43%				| Right-of-way at the next intersection	| 
+| 2.16%					| Children crossing 					|
+| 0.50%					| Beware of ice/snow					|
+| 0.45%					| Pedestrians							|
+| 0.12%					| Road work								|
 
 ![alt text][image7]
 
@@ -208,24 +223,24 @@ For image 1, 3, 4 and 5 the model is very sure about the prediction (probability
 |:---------------------:|:-------------------------------------:| 
 | 100.00%				| Priority road							| 
 | 0.00%					| Roundabout mandatory 					|
-| 0.00%					| No entry								|
-| 0.00%					| Stop									|
+| 0.00%					| No passing							|
 | 0.00%					| Speed limit (50km/h)					|
+| 0.00%					| No entry								|
 
 ![alt text][image8]
 
 | Probability			| Prediction							| 
 |:---------------------:|:-------------------------------------:| 
-| 35.73%				| Priority road							| 
-| 27.43%				| Speed limit (80km/h)					|
-| 8.04%					| Road work								|
-| 5.66%					| Speed limit (60km/h)					|
-| 4.51%					| Speed limit (30km/h)					|
+| 99.96%				| Traffic signals						| 
+| 0.03%					| General caution						|
+| 0.00%					| Pedestrians							|
+| 0.00%					| Right-of-way at the next intersection	|
+| 0.00%					| Go straight or left					|
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
-The image below shows the feature maps from first convolution layer. It is not clear to me what characteristics the neural network use to make classifications. But most of the feature maps seems to be a kind of learned edge detectors except from feature map 5 and 9.
+The image below shows the feature maps from first convolution layer. It is not clear to me what characteristics the neural network use to make classifications. But most of the feature maps seems to be a kind of learned edge detectors.
 
 ![alt text][image9]
 
